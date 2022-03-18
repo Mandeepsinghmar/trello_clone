@@ -4,38 +4,38 @@ import { v4 as uuidv4 } from 'uuid';
 const initialState = [
     {
         title: "Backlog",
-        id: 1,
+        id: '1',
         tasks: [
             {
-                id: 5,
+                id: '5',
                 text: "Hero section to be improved based on the new feedback"
             },
             {
-                id: 6,
+                id: '6',
                 text: "Add one more type of chart to the left hand"
             }
         ]
     },
     {
         title: "Work in progress",
-        id: 2,
+        id: '2',
         tasks: [
             {
-                id: 6,
+                id: '7',
                 text: "Copywriting review for all copies inside app"
             },
             {
-                id: 7,
+                id: '8',
                 text: "Improve colors to have a better contrast"
             },
         ]
     },
     {
         title: "In Review",
-        id: 3,
+        id: '3',
         tasks: [
             {
-                id: 8,
+                id: '9',
                 text: "Update the newest ios build"
             },
 
@@ -43,10 +43,10 @@ const initialState = [
     },
     {
         title: "Finished",
-        id: 4,
+        id: '4',
         tasks: [
             {
-                id: 9,
+                id: '10',
                 text: "Find new ways to make it minimal and look clean"
             },
 
@@ -83,6 +83,55 @@ const listsReducer = (state = initialState, action) => {
             });
 
             return updatedLists;
+        }
+
+        case 'DRAG_HAPPENED':
+            const {
+                droppableIdStart,
+                droppableIdEnd,
+                droppableIndexEnd,
+                droppableIndexStart,
+                type
+            } = action.payload;
+            let newState = [...state];
+
+            if (type === "list") {
+                const list = newState.splice(droppableIndexStart, 1);
+                newState.splice(droppableIndexEnd, 0, ...list);
+                return newState;
+            }
+
+            if (droppableIdStart === droppableIdEnd) {
+                const list = state.find(list => droppableIdStart === list.id);
+                const task = list.tasks.splice(droppableIndexStart, 1);
+                list.tasks.splice(droppableIndexEnd, 0, ...task);
+            }
+
+            if (droppableIdStart !== droppableIdEnd) {
+                const listStart = state.find(list => droppableIdStart === list.id);
+                const task = listStart.tasks.splice(droppableIndexStart, 1);
+                const listEnd = state.find(list => droppableIdEnd === list.id);
+
+                listEnd.tasks.splice(droppableIndexEnd, 0, ...task);
+            }
+
+            return newState;
+
+        case 'DELETE_LIST': {
+            const { listID } = action.payload;
+            return state.filter(list => list.id !== listID);
+        }
+
+        case 'DELETE_TASK': {
+            const { id, listID } = action.payload;
+            return state.map(list => {
+                if (list.id === listID) {
+                    const newTasks = list.tasks.filter(task => task.id !== id);
+                    return { ...list, tasks: newTasks };
+                } else {
+                    return list;
+                }
+            });
         }
 
         default:

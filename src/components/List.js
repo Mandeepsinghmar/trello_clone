@@ -2,11 +2,18 @@ import React from "react";
 import BackspaceIcon from '@mui/icons-material/Backspace';
 import { Box, Button, Typography } from "@mui/material";
 import { Droppable, Draggable } from "react-beautiful-dnd";
+import { useDispatch } from "react-redux";
 
 import Create from "./Create";
 import Task from './Task'
+import { deleteList } from "../store/actions/listsActions";
 
 const List = ({ title, tasks, listID, index }) => {
+    const dispatch = useDispatch()
+
+    const handleDeleteList = () => {
+        dispatch(deleteList(listID));
+    };
 
     return (
         <Draggable draggableId={String(listID)} index={index}>
@@ -19,7 +26,7 @@ const List = ({ title, tasks, listID, index }) => {
                 >
                     <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
                         <Typography variant='h6' sx={{ mb: 2 }}>{title}</Typography>
-                        <Button>
+                        <Button onClick={handleDeleteList}>
                             <BackspaceIcon />
                         </Button>
                     </Box>

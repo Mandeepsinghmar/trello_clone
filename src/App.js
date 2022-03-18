@@ -1,20 +1,32 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 
 import List from "./components/List";
 import Create from "./components/Create";
+import { sort } from "./store/actions/listsActions";
 
 const App = () => {
   const lists = useSelector((state) => state.listsReducer);
-
+  const dispatch = useDispatch()
   const onDragEnd = result => {
-    const { destination } = result;
+    const { destination, source, draggableId, type } = result;
 
     if (!destination) {
       return;
     }
+
+    dispatch(
+      sort(
+        source.droppableId,
+        destination.droppableId,
+        source.index,
+        destination.index,
+        draggableId,
+        type
+      )
+    );
   }
 
 
