@@ -48,3 +48,13 @@ export const deleteList = listID => {
         }
     };
 };
+
+export const editTitle = (listID, newTitle) => {
+    return {
+        type: 'EDIT_LIST_TITLE',
+        payload: {
+            listID,
+            newTitle
+        }
+    };
+};
